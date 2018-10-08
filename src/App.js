@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-// import StravaInfo from './components/StravaInfo'
+import Searchtab from './components/Searchtab'
 import axios from 'axios'
 require ('dotenv').config()
 
@@ -10,13 +10,36 @@ class App extends React.Component {
     super(props);
     this.state = {
       query: "",
-      venues: []
-    }
+      start: [],
+      finish: [],
+      venues: [],
+      isToggleOn: true,
+      // segments: [],
+      // currentLocation: [40.027587, -83.0624]
+    };
+    this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleCoffeeLocation(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+;
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleClick() {
+    this.setState(state => ({
+      isToggleOn: !state.isToggleOn
+    }));
   }
 
   componentDidMount() {
     this.loadMap()
-    this.getSegments()
+    // this.getSegments()
   }
 
   loadMap = () => {
@@ -32,13 +55,23 @@ class App extends React.Component {
     const bikeLayer = new window.google.maps.BicyclingLayer();
     bikeLayer.setMap(map);
 
-    this.state.venues.map(myVenue => {
+    const infowindow = new window.google.maps.InfoWindow();
+
+      this.state.venues.map(myVenue => {
       const marker = new window.google.maps.Marker({
         position: {lat: myVenue.venue.location.lat, lng: myVenue.venue.location.lng},
         map: map,
         title: myVenue.venue.name
+      });
+
+      const contentString = `${myVenue.venue.name}`;
+
+      marker.addListener('click', function() {
+        infowindow.setContent(contentString)
+        infowindow.open(map, marker);
       })
     })
+
     // const trafficLayer = new window.google.maps.TrafficLayer();
     // trafficLayer.setMap(map);
   }
@@ -50,7 +83,7 @@ class App extends React.Component {
       client_id: process.env.REACT_APP_FS_ID,
       client_secret: process.env.REACT_APP_FS_CS,
       query: "coffee",
-      near: "Upper Arlington, OH",
+      ll: this.state.currentLocation,
       v: "20180323"
     }
 
@@ -65,24 +98,6 @@ class App extends React.Component {
     })
   }
 
-  getSegments = () => {
-    const segment = "https://www.strava.com/api/v3/segments/explore"
-    const parameters = {
-      access_token: process.env.REACT_APP_STRAVA_ACCESS_TOKEN,
-      per_page: "10"
-
-    }
-    axios.get(segment + new URLSearchParams(parameters))
-    .then(response => {
-      this.setState({
-        venues: response.data.response.groups[0].items
-      })
-    })
-    .catch(error => {
-      console.error("error", error)
-    })
-  }
-
   render() {
     return (
       <div id="main">
@@ -90,6 +105,11 @@ class App extends React.Component {
           <h1>Cycle & Coffee</h1>
         </header>
         <main>
+          <Searchtab
+            coffeeLocation={this.state.coffeeLocation}
+            handleClick={this.state.handleClick}
+            handleClick={this.state.handleClick}
+            />
           <div id="map"></div>
           <div id="segments"></div>
         </main>

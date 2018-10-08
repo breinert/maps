@@ -3,6 +3,12 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+header {
+  height: 40px;
+  background-color: orange;
+  margin: 0;
+  text-align: center;
+}
 #map {
   height: 100vh;
 }

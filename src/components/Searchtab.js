@@ -1,58 +1,22 @@
 import React from 'react'
 
-class Searchtab extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      coffeeLocation: "choose",
-      isToggleOnStart: true,
-      isToggleOnFinish: true
-    }
-    this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
-    this.handleClickStart = this.handleClickStart.bind(this);
-    this.handleClickFinish = this.handleClickFinish.bind(this);
-  }
+const Searchtab = (props) => {
 
-  handleCoffeeLocation(e) {
-    // const target = e.target;
-    // const value = target.value;
-    // const name = target.name;
-    this.setState({
-      coffeeLocation: e.target.value
-    });
-    console.log(`After click: ${e.target.value}`)
-  }
-
-  handleClickStart() {
-    this.setState(state => ({
-      isToggleOnStart: !state.isToggleOnStart
-    }));
-    console.log(`After click: ${this.state.isToggleOnStart}`)
-  }
-
-  handleClickFinish() {
-    this.setState(state => ({
-      isToggleOnFinish: !state.isToggleOnFinish
-    }));
-    console.log(`After click: ${this.state.isToggleOnFinish}`)
-  }
-  render() {
-    const coffeeLocation = this.state.coffeeLocation;
-    return (
-      <div id="searchtab">
-        <button onClick={(e) => this.handleClickStart(e)} id="start">{this.state.isToggleOnStart ? 'Start' : 'Select'}</button>
-        <button onClick={(e) => this.handleClickFinish(e)} id="finish">{this.state.isToggleOnFinish ? 'Finish' : 'Select'}</button>
-        <h3>Where would you like your coffee stop?</h3>
-        <select id="coffeeLocation"
-          value={coffeeLocation}
-          onChange={this.handleCoffeeLocation}>
-          <option value="choose" disabled>Choose one</option>
-          <option value="rideStart">Ride start</option>
-          <option value="rideFinish">Ride finish</option>
-          {/* <option value="Both">Both</option> */}
-        </select>
-      </div>
-    )
-  }
+  return (
+    <div id="searchtab">
+      <button onClick={props.handleClickStart} id="start">{props.isToggleOnStart ? 'Start' : 'Select'}</button>
+      <button onClick={props.handleClickFinish} id="finish">{props.isToggleOnFinish ? 'Finish' : 'Select'}</button>
+      <h3>Where would you like your coffee stop?</h3>
+      <select id="coffeeLocation"
+        value={props.coffeeLocation}
+        onChange={props.handleCoffeeLocation}>
+        <option value="choose" disabled>Choose one</option>
+        <option value="rideStart">Ride start</option>
+        <option value="rideFinish">Ride finish</option>
+        {/* <option value="Both">Both</option> */}
+      </select>
+    </div>
+  )
 }
+
 export default Searchtab

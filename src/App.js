@@ -1,20 +1,25 @@
+/*global google*/
 import React from 'react'
 import './App.css'
 import Searchtab from './components/Searchtab'
 import axios from 'axios'
 require ('dotenv').config()
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: "",
       start: [],
       finish: [],
-      venues: []
+      venues: [],
+      coffeeLocation: "choose",
+      isToggleOnStart: true,
+      isToggleOnFinish: true
       // currentLocation: [40.027587, -83.0624]
-    };
+    }
+    this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
+    this.handleClickStart = this.handleClickStart.bind(this);
+    this.handleClickFinish = this.handleClickFinish.bind(this);
   }
 
   componentDidMount() {
@@ -25,20 +30,20 @@ class App extends React.Component {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDUZDt6xP79oqTXaAB6leSmMCYzZkc4Zdo&callback=initMap")
     window.initMap = this.initMap
   }
-  
+
   //function to make the google map
   initMap = () => {
-    const map = new window.google.maps.Map(document.getElementById('map'), {
+    const map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 40.027587, lng: -83.0624},
       zoom: 13
     });
-    const bikeLayer = new window.google.maps.BicyclingLayer();
+    const bikeLayer = new google.maps.BicyclingLayer();
     bikeLayer.setMap(map);
 
-    const infowindow = new window.google.maps.InfoWindow();
+    const infowindow = new google.maps.InfoWindow();
 
       this.state.venues.map(myVenue => {
-      const marker = new window.google.maps.Marker({
+      const marker = new google.maps.Marker({
         position: {lat: myVenue.venue.location.lat, lng: myVenue.venue.location.lng},
         map: map,
         title: myVenue.venue.name,
@@ -53,7 +58,7 @@ class App extends React.Component {
       })
     })
 
-    // const trafficLayer = new window.google.maps.TrafficLayer();
+    // const trafficLayer = new google.maps.TrafficLayer();
     // trafficLayer.setMap(map);
   }
 
@@ -79,6 +84,27 @@ class App extends React.Component {
     })
   }
 
+  handleCoffeeLocation(e) {
+    this.setState({
+      coffeeLocation: e.target.value
+    });
+    console.log(`After click: ${e.target.value}`)
+  }
+
+  handleClickStart() {
+    this.setState(state => ({
+      isToggleOnStart: !state.isToggleOnStart
+    }));
+    console.log(`After click: ${this.state.isToggleOnStart}`)
+  }
+
+  handleClickFinish() {
+    this.setState(state => ({
+      isToggleOnFinish: !state.isToggleOnFinish
+    }));
+    console.log(`After click: ${this.state.isToggleOnFinish}`)
+  }
+
   render() {
     return (
       <div id="main">
@@ -87,7 +113,13 @@ class App extends React.Component {
         </header>
         <main>
           <Searchtab
-            />
+          coffeeLocation = {this.props.coffeeLocation}
+          isToggleOnStart = {this.props.isToggleOnStart}
+          isToggleOnFinish = {this.props.isToggleOnFinish}
+          handleCoffeeLocation = {this.handleCoffeeLocation}
+          handleClickStart = {this.handleClickStart}
+          handleClickFinish = {this.handleClickFinish}
+          />
           <div id="map"></div>
           <div id="segments"></div>
         </main>

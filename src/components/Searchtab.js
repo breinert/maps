@@ -7,22 +7,20 @@ class Searchtab extends React.Component {
       coffeeLocation: "choose",
       isToggleOnStart: true,
       isToggleOnFinish: true
-
     }
     this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
     this.handleClickStart = this.handleClickStart.bind(this);
     this.handleClickFinish = this.handleClickFinish.bind(this);
   }
-  
+
   handleCoffeeLocation(e) {
-    const target = e.target;
-    const value = target.value;
-    const name = target.name;
-;
+    // const target = e.target;
+    // const value = target.value;
+    // const name = target.name;
     this.setState({
-      [name]: value
+      coffeeLocation: e.target.value
     });
-    console.log(`After click: ${this.state.value}`)
+    console.log(`After click: ${e.target.value}`)
   }
 
   handleClickStart() {
@@ -39,14 +37,15 @@ class Searchtab extends React.Component {
     console.log(`After click: ${this.state.isToggleOnFinish}`)
   }
   render() {
+    const coffeeLocation = this.state.coffeeLocation;
     return (
       <div id="searchtab">
         <button onClick={(e) => this.handleClickStart(e)} id="start">{this.state.isToggleOnStart ? 'Start' : 'Select'}</button>
         <button onClick={(e) => this.handleClickFinish(e)} id="finish">{this.state.isToggleOnFinish ? 'Finish' : 'Select'}</button>
         <h3>Where would you like your coffee stop?</h3>
-        <select id="coffeeLocation">
-          value={this.state.coffeeLocation}
-          onChange={(e) => this.handleCoffeeLocation(this.state.coffeeLocation, e.target.value)}
+        <select id="coffeeLocation"
+          value={coffeeLocation}
+          onChange={this.handleCoffeeLocation}>
           <option value="choose" disabled>Choose one</option>
           <option value="rideStart">Ride start</option>
           <option value="rideFinish">Ride finish</option>

@@ -12,40 +12,20 @@ class App extends React.Component {
       query: "",
       start: [],
       finish: [],
-      venues: [],
-      isToggleOn: true,
-      // segments: [],
+      venues: []
       // currentLocation: [40.027587, -83.0624]
     };
-    this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleCoffeeLocation(event) {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-;
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleClick() {
-    this.setState(state => ({
-      isToggleOn: !state.isToggleOn
-    }));
   }
 
   componentDidMount() {
     this.loadMap()
-    // this.getSegments()
   }
 
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDUZDt6xP79oqTXaAB6leSmMCYzZkc4Zdo&callback=initMap")
     window.initMap = this.initMap
   }
+  
   //function to make the google map
   initMap = () => {
     const map = new window.google.maps.Map(document.getElementById('map'), {
@@ -61,7 +41,8 @@ class App extends React.Component {
       const marker = new window.google.maps.Marker({
         position: {lat: myVenue.venue.location.lat, lng: myVenue.venue.location.lng},
         map: map,
-        title: myVenue.venue.name
+        title: myVenue.venue.name,
+        // animation:
       });
 
       const contentString = `${myVenue.venue.name}`;
@@ -106,9 +87,6 @@ class App extends React.Component {
         </header>
         <main>
           <Searchtab
-            coffeeLocation={this.state.coffeeLocation}
-            handleClick={this.state.handleClick}
-            handleClick={this.state.handleClick}
             />
           <div id="map"></div>
           <div id="segments"></div>

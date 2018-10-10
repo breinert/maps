@@ -113,9 +113,9 @@ class App extends React.Component {
         </header>
         <main>
           <Searchtab
-          coffeeLocation = {this.props.coffeeLocation}
-          isToggleOnStart = {this.props.isToggleOnStart}
-          isToggleOnFinish = {this.props.isToggleOnFinish}
+          coffeeLocation = {this.state.coffeeLocation}
+          isToggleOnStart = {this.state.isToggleOnStart}
+          isToggleOnFinish = {this.state.isToggleOnFinish}
           handleCoffeeLocation = {this.handleCoffeeLocation}
           handleClickStart = {this.handleClickStart}
           handleClickFinish = {this.handleClickFinish}

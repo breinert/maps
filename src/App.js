@@ -40,6 +40,12 @@ class App extends React.Component {
     const bikeLayer = new google.maps.BicyclingLayer();
     bikeLayer.setMap(map);
 
+    const startLoc = new google.maps.event.addListener(map, 'click', function(event) {
+      let startLat = event.latLng.lat();
+      let startLng = event.latLng.lng();
+      console.log( startLat + ',' + startLng);
+    });
+
     const infowindow = new google.maps.InfoWindow();
 
       this.state.venues.map(myVenue => {
@@ -106,6 +112,7 @@ class App extends React.Component {
   }
 
   render() {
+
     return (
       <div id="main">
         <header>

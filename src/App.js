@@ -9,17 +9,27 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      start: [],
-      finish: [],
+      markers: [
+        {
+          name: "Start position",
+          position: {
+            lat: 40.0784,
+            lng: -83.0377
+          }
+        },
+        {
+          name: "Finish Position",
+          position: {
+            lat: 40.0440,
+            lng: -83.0253
+          }
+        }
+      ],
       venues: [],
       coffeeLocation: "choose",
-      isToggleOnStart: true,
-      isToggleOnFinish: true
-      // currentLocation: [40.027587, -83.0624]
     }
     this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
-    this.handleClickStart = this.handleClickStart.bind(this);
-    this.handleClickFinish = this.handleClickFinish.bind(this);
+    this.handleFindCoffee = this.handleFindCoffee.bind(this);
   }
 
   componentDidMount() {
@@ -40,33 +50,43 @@ class App extends React.Component {
     const bikeLayer = new google.maps.BicyclingLayer();
     bikeLayer.setMap(map);
 
-    const startLoc = new google.maps.event.addListener(map, 'click', function(event) {
-      let startLat = event.latLng.lat();
-      let startLng = event.latLng.lng();
-      console.log( startLat + ',' + startLng);
+    const markerStart = new google.maps.Marker({
+      position: this.state.markers[0].position,
+      map: map,
+      title: 'Start',
+      draggable: true,
     });
+    markerStart.setMap(map);
 
-    const infowindow = new google.maps.InfoWindow();
+    const markerFinish = new google.maps.Marker({
+      position: this.state.markers[1].position,
+      map: map,
+      title: 'Finish',
+      draggable: true,
+    });
+    markerFinish.setMap(map);
+  }
+      // const infowindow = new google.maps.InfoWindow();
+      // this.state.start.map(myStart => {
+      //   const marker = new google.maps.Marker({
+      //     position: {lat: lat, lng: lng},
+      //     map: map,
+      //     title: 'Start',
+      //     // animation:
+      //   });
 
-      this.state.venues.map(myVenue => {
-      const marker = new google.maps.Marker({
-        position: {lat: myVenue.venue.location.lat, lng: myVenue.venue.location.lng},
-        map: map,
-        title: myVenue.venue.name,
-        // animation:
-      });
+      //   const contentString = `${myStart.title}`;
 
-      const contentString = `${myVenue.venue.name}`;
+      //   marker.addListener('click', function() {
+      //     infowindow.setContent(contentString)
+      //     infowindow.open(map, marker);
+      //   });
+      // })
 
-      marker.addListener('click', function() {
-        infowindow.setContent(contentString)
-        infowindow.open(map, marker);
-      })
-    })
+
 
     // const trafficLayer = new google.maps.TrafficLayer();
     // trafficLayer.setMap(map);
-  }
 
   // function to obtain info from foursquare
   getStores = () => {
@@ -90,6 +110,7 @@ class App extends React.Component {
     })
   }
 
+  // functions for the searchtab
   handleCoffeeLocation(e) {
     this.setState({
       coffeeLocation: e.target.value
@@ -97,19 +118,19 @@ class App extends React.Component {
     console.log(`After click: ${e.target.value}`)
   }
 
-  handleClickStart() {
-    this.setState(state => ({
-      isToggleOnStart: !state.isToggleOnStart
-    }));
-    console.log(`After click: ${this.state.isToggleOnStart}`)
+  handleFindCoffee = (coord, index) => {
+    const {latLng } = coord;
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+
+    this.setState(prevState => {
+      const markers = [...this.state.markers];
+      markers[index] = { ...markers[index], position: {lat, lng }};
+      return { markers };
+    });
   }
 
-  handleClickFinish() {
-    this.setState(state => ({
-      isToggleOnFinish: !state.isToggleOnFinish
-    }));
-    console.log(`After click: ${this.state.isToggleOnFinish}`)
-  }
+
 
   render() {
 
@@ -127,8 +148,10 @@ class App extends React.Component {
           handleClickStart = {this.handleClickStart}
           handleClickFinish = {this.handleClickFinish}
           />
-          <div id="map"></div>
-          <div id="segments"></div>
+          <div id="map"
+
+          >
+          </div>
         </main>
         <aside>
           <div id="foursquare"></div>

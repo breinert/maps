@@ -11,20 +11,20 @@ class App extends React.Component {
     this.state = {
       markers: [
         {
-          name: "Start position",
           position: {
             lat: 40.0784,
             lng: -83.0377
           }
         },
         {
-          name: "Finish Position",
           position: {
             lat: 40.0440,
             lng: -83.0253
           }
         }
       ],
+      startPosition: [],
+      finishPosition: [],
       venues: [],
       coffeeLocation: "choose",
     }
@@ -55,6 +55,7 @@ class App extends React.Component {
       map: map,
       title: 'Start',
       draggable: true,
+      animation: google.maps.Animation.DROP
     });
     markerStart.setMap(map);
 
@@ -63,25 +64,48 @@ class App extends React.Component {
       map: map,
       title: 'Finish',
       draggable: true,
+      animation: google.maps.Animation.DROP
     });
     markerFinish.setMap(map);
+    
+    const self = this;
+    markerStart.addListener('dragend', function() {
+      markerStart.setAnimation(google.maps.Animation.BOUNCE)
+    });
+    markerFinish.addListener('dragend', function() {
+      markerFinish.setAnimation(google.maps.Animation.BOUNCE)
+    });
+    
+    markerStart.addListener('dragend', function (event) {
+      let startPosition = self.state.startPosition;
+      self.setState({
+        startPosition: [event.latLng.lat(), event.latLng.lng()]
+      })
+      console.log(event.latLng.lat());
+    });
+    markerFinish.addListener('dragend', function (event) {
+      let finishPosition = self.state.finishPosition;
+      self.setState({
+        finishPosition: [event.latLng.lat(), event.latLng.lng()]
+      })
+      console.log(event.latLng.lat());
+    });
+  //   google.maps.event.addListener(markerStart, 'click', function() {
+      
+  //   });
   }
-      // const infowindow = new google.maps.InfoWindow();
-      // this.state.start.map(myStart => {
-      //   const marker = new google.maps.Marker({
-      //     position: {lat: lat, lng: lng},
-      //     map: map,
-      //     title: 'Start',
-      //     // animation:
-      //   });
+  
+    // const infowindow = new google.maps.InfoWindow();
+    // this.state.start.map(myStart => {
+    //   const marker = new google.maps.Marker({
+    //     position: {lat: lat, lng: lng},
+    //     map: map,
+    //     title: 'Start',
+    //     // animation:
+    //   });
+    // }
+      // const contentString = `${myStart.title}`;
 
-      //   const contentString = `${myStart.title}`;
-
-      //   marker.addListener('click', function() {
-      //     infowindow.setContent(contentString)
-      //     infowindow.open(map, marker);
-      //   });
-      // })
 
 
 
@@ -118,19 +142,31 @@ class App extends React.Component {
     console.log(`After click: ${e.target.value}`)
   }
 
-  handleFindCoffee = (coord, index) => {
-    const {latLng } = coord;
-    const lat = latLng.lat();
-    const lng = latLng.lng();
-
-    this.setState(prevState => {
-      const markers = [...this.state.markers];
-      markers[index] = { ...markers[index], position: {lat, lng }};
-      return { markers };
-    });
+  handleFindCoffee = () => {
+ 
+    // if (this.state.coffeeLocation === 'rideStart') {
+    //   this.setState(prevState => {
+    //     markers[0].position = [latStart, lngStart]
+    //     return { markers };
+    //   });
+    // } else if (this.state.coffeeLocation === 'rideFinish') {
+    //     this.setState(prevState => {
+    //       markers[1].position = [latFinish, lngFinish];
+    //       return { markers };
+    //     });
+    // } else if (this.state.coffeeLocation === 'both') {
+    //   this.setState(prevState => {
+    //     markers[0].position = [latStart, lngStart]
+    //     return { markers };
+    //   });
+    //   this.setState(prevState => {
+    //     markers[1].position = [latFinish, lngFinish];
+    //     return { markers };
+    //   });
+    // } else {
+    //   alert("Select a location for coffee");
+    // }
   }
-
-
 
   render() {
 
@@ -142,11 +178,8 @@ class App extends React.Component {
         <main>
           <Searchtab
           coffeeLocation = {this.state.coffeeLocation}
-          isToggleOnStart = {this.state.isToggleOnStart}
-          isToggleOnFinish = {this.state.isToggleOnFinish}
           handleCoffeeLocation = {this.handleCoffeeLocation}
-          handleClickStart = {this.handleClickStart}
-          handleClickFinish = {this.handleClickFinish}
+          handleFindCoffee = {this.handleFindCoffee}
           />
           <div id="map"
 

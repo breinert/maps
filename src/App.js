@@ -54,17 +54,12 @@ class App extends React.Component {
       animation: google.maps.Animation.DROP
     });
     markerFinish.setMap(map);
-    
+
     const self = this;
-    markerStart.addListener('dragend', function() {
-      markerStart.setAnimation(google.maps.Animation.BOUNCE)
-    });
-    markerFinish.addListener('dragend', function() {
-      markerFinish.setAnimation(google.maps.Animation.BOUNCE)
-    });
-    
+
     markerStart.addListener('dragend', function (event) {
       let startPosition = self.state.startPosition;
+      markerStart.setAnimation(google.maps.Animation.BOUNCE)
       self.setState({
         startPosition: [event.latLng.lat(), event.latLng.lng()]
       })
@@ -72,25 +67,26 @@ class App extends React.Component {
     });
     markerFinish.addListener('dragend', function (event) {
       let finishPosition = self.state.finishPosition;
+      markerFinish.setAnimation(google.maps.Animation.BOUNCE)
       self.setState({
         finishPosition: [event.latLng.lat(), event.latLng.lng()]
       })
       console.log(event.latLng.lat());
     });
-  }
-  
+
     // const infowindow = new google.maps.InfoWindow();
-    // this.state.start.map(myStart => {
-    //   const marker = new google.maps.Marker({
-    //     position: {lat: lat, lng: lng},
-    //     map: map,
-    //     title: 'Start',
-    //     // animation:
-    //   });
-    // }
+
+    this.state.venues.map(myVenue => {
+      const marker = new google.maps.Marker({
+        position: {lat: myVenue.venue.location.lat, lng: myVenue.venue.location.lng},
+        map: map,
+        title: myVenue.venue.name
+
+      });
+    })
       // const contentString = `${myStart.title}`;
 
-
+  }
 
 
     // const trafficLayer = new google.maps.TrafficLayer();
@@ -98,13 +94,14 @@ class App extends React.Component {
 
   // function to obtain info from foursquare
   getStores = () => {
-    const endPoint = "https://api.foursquare.com/v2/venues/search";
+    const endPoint = "https://api.foursquare.com/v2/venues/explore?"
     const parameters = {
       client_id: process.env.REACT_APP_FS_ID,
       client_secret: process.env.REACT_APP_FS_CS,
-      query: "coffee",
+      categoryId: "4bf58dd8d48988d1e0931735",
+      radius: "250",
       ll: this.state.venueLocation,
-      v: "20180323"
+      v: "20181016"
     }
 
     axios.get(endPoint + new URLSearchParams(parameters))
@@ -126,7 +123,7 @@ class App extends React.Component {
     console.log(`After click: ${e.target.value}`)
   }
 
-  handleFindCoffee(e) {
+  handleFindCoffee() {
     const venueLocation = this.state.venueLocation;
     const startPosition = this.state.startPosition;
     const finishPosition = this.state.finishPosition;
@@ -147,6 +144,7 @@ class App extends React.Component {
     } else {
       alert("Select a location for coffee");
     }
+    this.getStores();
   }
 
   render() {

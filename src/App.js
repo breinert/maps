@@ -9,23 +9,10 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      markers: [
-        {
-          position: {
-            lat: 40.0784,
-            lng: -83.0377
-          }
-        },
-        {
-          position: {
-            lat: 40.0440,
-            lng: -83.0253
-          }
-        }
-      ],
       startPosition: [],
       finishPosition: [],
       venues: [],
+      venueLocation: [],
       coffeeLocation: "choose",
     }
     this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
@@ -51,7 +38,7 @@ class App extends React.Component {
     bikeLayer.setMap(map);
 
     const markerStart = new google.maps.Marker({
-      position: this.state.markers[0].position,
+      position: {lat: 40.0784, lng: -83.0377},
       map: map,
       title: 'Start',
       draggable: true,
@@ -60,7 +47,7 @@ class App extends React.Component {
     markerStart.setMap(map);
 
     const markerFinish = new google.maps.Marker({
-      position: this.state.markers[1].position,
+      position: {lat: 40.0440, lng: -83.0253},
       map: map,
       title: 'Finish',
       draggable: true,
@@ -90,9 +77,6 @@ class App extends React.Component {
       })
       console.log(event.latLng.lat());
     });
-  //   google.maps.event.addListener(markerStart, 'click', function() {
-      
-  //   });
   }
   
     // const infowindow = new google.maps.InfoWindow();
@@ -119,7 +103,7 @@ class App extends React.Component {
       client_id: process.env.REACT_APP_FS_ID,
       client_secret: process.env.REACT_APP_FS_CS,
       query: "coffee",
-      ll: this.state.currentLocation,
+      ll: this.state.venueLocation,
       v: "20180323"
     }
 
@@ -142,30 +126,27 @@ class App extends React.Component {
     console.log(`After click: ${e.target.value}`)
   }
 
-  handleFindCoffee = () => {
- 
-    // if (this.state.coffeeLocation === 'rideStart') {
-    //   this.setState(prevState => {
-    //     markers[0].position = [latStart, lngStart]
-    //     return { markers };
-    //   });
-    // } else if (this.state.coffeeLocation === 'rideFinish') {
-    //     this.setState(prevState => {
-    //       markers[1].position = [latFinish, lngFinish];
-    //       return { markers };
-    //     });
-    // } else if (this.state.coffeeLocation === 'both') {
-    //   this.setState(prevState => {
-    //     markers[0].position = [latStart, lngStart]
-    //     return { markers };
-    //   });
-    //   this.setState(prevState => {
-    //     markers[1].position = [latFinish, lngFinish];
-    //     return { markers };
-    //   });
-    // } else {
-    //   alert("Select a location for coffee");
-    // }
+  handleFindCoffee(e) {
+    const venueLocation = this.state.venueLocation;
+    const startPosition = this.state.startPosition;
+    const finishPosition = this.state.finishPosition;
+    const coffeeLocation = this.state.coffeeLocation;
+
+    if (coffeeLocation === 'rideStart') {
+      this.setState({
+        venueLocation: startPosition
+      });
+    } else if (coffeeLocation === 'rideFinish') {
+        this.setState({
+          venueLocation: finishPosition
+        });
+    } else if (coffeeLocation === 'both') {
+      this.setState({
+          venueLocation: [startPosition, finishPosition]
+      });
+    } else {
+      alert("Select a location for coffee");
+    }
   }
 
   render() {

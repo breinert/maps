@@ -118,6 +118,29 @@ class App extends React.Component {
     })
   }
 
+  this.setState({
+    markers: Object.assign(this.state.markers, marker)
+  });
+  const venue = this.state.venues.find(venue => venue.venue.id === marker.id);
+  console.log(venue);
+  const endPoint = `https://api.foursquare.com/v2/venues/${marker.id}?`
+  const parameters = {
+    client_id: "JDO1KAGDULQO3ETFJ4EDPEHN203BEDKSD1HB5UUKRDP2R3H2",
+    client_secret: "UWMFNIMGT33V31ZGCVI1GICMRK43DSYBJSNBNJTKC2ECKIHH",
+    v: "20181010"
+  }
+
+  axios.get(endPoint + new URLSearchParams(parameters))
+  .then(response => {
+    const myVenue = Object.assign(venue, response.data.response.venue );
+    this.setState({ venues: Object.assign(this.state.venues, myVenue) });
+    console.log(myVenue);
+  })
+  .catch(error => {
+    console.error("error", error);
+  })
+}
+
   // functions for the searchtab
   handleCoffeeLocation(e) {
     this.setState({

@@ -15,7 +15,7 @@ const Searchtab = (props) => {
       </select>
       <button
       id="findCoffee"
-      onClick={ props.handleFindCoffee }
+      onClick={props.handleFindCoffee}
       >Find Coffee!</button>
     </div>
   )

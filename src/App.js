@@ -2,6 +2,7 @@
 import React from 'react'
 import './App.css'
 import Searchtab from './components/Searchtab'
+import MarkerModal from './components/MarkerModal'
 import axios from 'axios'
 require ('dotenv').config()
 
@@ -12,17 +13,24 @@ class App extends React.Component {
       startPosition: [],
       finishPosition: [],
       venues: [],
-      venueLocation: [],
+      venueLocation: "",
       coffeeLocation: "choose",
     }
     this.handleCoffeeLocation = this.handleCoffeeLocation.bind(this);
     this.handleFindCoffee = this.handleFindCoffee.bind(this);
   }
-
+  // initialize the map
   componentDidMount() {
     this.loadMap()
   }
+  // check for change in venueLocation
+  componentDidUpdate(prevState) {
+    if (prevState.venueLocation !== this.state.venueLocation) {
+      this.getStores()
+    }
+  }
 
+  }
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDUZDt6xP79oqTXaAB6leSmMCYzZkc4Zdo&callback=initMap")
     window.initMap = this.initMap
@@ -54,17 +62,12 @@ class App extends React.Component {
       animation: google.maps.Animation.DROP
     });
     markerFinish.setMap(map);
-    
+
     const self = this;
-    markerStart.addListener('dragend', function() {
-      markerStart.setAnimation(google.maps.Animation.BOUNCE)
-    });
-    markerFinish.addListener('dragend', function() {
-      markerFinish.setAnimation(google.maps.Animation.BOUNCE)
-    });
-    
+
     markerStart.addListener('dragend', function (event) {
       let startPosition = self.state.startPosition;
+      markerStart.setAnimation(google.maps.Animation.BOUNCE)
       self.setState({
         startPosition: [event.latLng.lat(), event.latLng.lng()]
       })
@@ -72,25 +75,29 @@ class App extends React.Component {
     });
     markerFinish.addListener('dragend', function (event) {
       let finishPosition = self.state.finishPosition;
+      markerFinish.setAnimation(google.maps.Animation.BOUNCE)
       self.setState({
         finishPosition: [event.latLng.lat(), event.latLng.lng()]
       })
       console.log(event.latLng.lat());
     });
+    const infowindow = new google.maps.InfoWindow();
+    //make markers for stores
+    this.state.venues.map(myVenue => {
+      const marker = new google.maps.Marker({
+        position: {lat: myVenue.venue.location.lat, lng: myVenue.venue.location.lng},
+        map: map,
+        title: myVenue.venue.name
+      });
+      const contentString = `${myVenue.venue.name}`;
+      marker.addListener('click', function() {
+        infowindow.setContent(contentString)
+        infowindow.open(map, marker);
+      })
+    })
+
+
   }
-  
-    // const infowindow = new google.maps.InfoWindow();
-    // this.state.start.map(myStart => {
-    //   const marker = new google.maps.Marker({
-    //     position: {lat: lat, lng: lng},
-    //     map: map,
-    //     title: 'Start',
-    //     // animation:
-    //   });
-    // }
-      // const contentString = `${myStart.title}`;
-
-
 
 
     // const trafficLayer = new google.maps.TrafficLayer();
@@ -98,20 +105,23 @@ class App extends React.Component {
 
   // function to obtain info from foursquare
   getStores = () => {
-    const endPoint = "https://api.foursquare.com/v2/venues/search";
+    // const location = this.state.venueLocation;
+    console.log(this.state.venueLocation);
+    const endPoint = "https://api.foursquare.com/v2/venues/explore?"
     const parameters = {
-      client_id: process.env.REACT_APP_FS_ID,
-      client_secret: process.env.REACT_APP_FS_CS,
+      client_id: "JDO1KAGDULQO3ETFJ4EDPEHN203BEDKSD1HB5UUKRDP2R3H2",
+      client_secret: "UWMFNIMGT33V31ZGCVI1GICMRK43DSYBJSNBNJTKC2ECKIHH",
       query: "coffee",
+      radius: "1000",
       ll: this.state.venueLocation,
-      v: "20180323"
+      v: "201811010"
     }
 
     axios.get(endPoint + new URLSearchParams(parameters))
     .then(response => {
       this.setState({
         venues: response.data.response.groups[0].items
-      }, this.renderMap())
+      })
     })
     .catch(error => {
       console.error("error", error)
@@ -146,27 +156,27 @@ class App extends React.Component {
     this.setState({
       coffeeLocation: e.target.value
     });
-    console.log(`After click: ${e.target.value}`)
+    console.log(`After click: ${this.state.coffeeLocation}`)
   }
 
-  handleFindCoffee(e) {
-    const venueLocation = this.state.venueLocation;
+  handleFindCoffee() {
+    // const venueLocation = this.state.venueLocation;
     const startPosition = this.state.startPosition;
     const finishPosition = this.state.finishPosition;
     const coffeeLocation = this.state.coffeeLocation;
 
     if (coffeeLocation === 'rideStart') {
       this.setState({
-        venueLocation: startPosition
-      });
+        venueLocation: startPosition.toString()
+      })
     } else if (coffeeLocation === 'rideFinish') {
-        this.setState({
-          venueLocation: finishPosition
-        });
+      this.setState({
+        venueLocation: finishPosition.toString()
+      })
     } else if (coffeeLocation === 'both') {
       this.setState({
-          venueLocation: [startPosition, finishPosition]
-      });
+        venueLocation: startPosition.toString() + finishPosition.toString()
+      })
     } else {
       alert("Select a location for coffee");
     }
@@ -191,7 +201,8 @@ class App extends React.Component {
           </div>
         </main>
         <aside>
-          <div id="foursquare"></div>
+          <MarkerModal
+          />
         </aside>
       </div>
     );
